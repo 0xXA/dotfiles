@@ -1,0 +1,153 @@
+[commit]
+	gpgsign = true
+
+[format]
+	signoff = true
+
+[credential]
+	helper = cache
+
+[diff]
+        renameLimit = 4096
+
+[color]
+	ui = auto
+	interactive = always
+        grep = always
+	showbranch = always
+
+[color "branch"]
+	current = green bold
+	local   = yellow bold
+	remote  = magenta bold
+
+[color "diff"]
+	meta = white bold
+	frag = magenta bold
+	old = red bold
+	new = green bold
+	whitespace = red reverse
+
+[color "status"]
+	added = green bold
+	changed = yellow bold
+	untracked = red bold
+        unmerged = magenta bold
+
+[core]
+        abbrev = 12
+	editor = "vim"
+	filemode = false
+	trustctime = false
+	excludesfile = ~/.globeignore
+	checkstat = default
+	quotepath = false
+	eol = native
+
+[diff]
+	renames = true
+
+[merge]
+	log = true
+
+[gc]
+	auto = 5000
+
+[grep]
+	lineNumber = true
+	patternType = extended
+	extendedRegexp = true
+
+[help]
+	format = man
+	autocorrect = 1
+
+[log]
+	date = rfc
+
+[man]
+	viewer = man
+
+[push]
+	default = current
+
+[rebase]
+	stat = true
+
+[reset]
+	confirmHardReset = true
+
+[sendemail]
+	from = Yuvraj Saxena <infectedx27@gmail.com>
+	smtpencryption = tls
+	smtpserver = smtp.gmail.com
+	smtpuser = infectedx27@gmail.com
+	smtpserverport = 587
+	multiedit = true
+	confirm = always
+
+[sequence]
+	editor = vim
+
+[commit]
+	signoff = true
+
+[status]
+	branch = true
+	displayCommentPrefix = true
+	relativePaths = false
+	showUntrackedFiles = all
+	submodulesummary = true
+
+[user]
+	name = Yuvraj Saxena
+	email = infectedx27@gmail.com
+	signingkey = 2BF9C193F44044F11A1AE5040714FDDBD12AB53F
+[web]
+        browser = firefox
+[http]
+	cookiefile = /home/xa/.gitcookies
+	postBuffer = 524288000
+
+[transfer]
+	fsckObjects = false
+
+[alias]
+        one = show -s --pretty='format:%h (\"%s\")'
+	a = add
+	aa = add -A
+	cs = commit -s
+	cm = commit -am
+	csa = commit -sa
+	cam = commit -sam
+	cp = cherry-pick --signoff
+	cpa = cherry-pick --abort
+	cpc = cherry-pick --continue
+	d = diff
+	dc = diff --cached
+	dcs = diff --stat --cached
+	ds = diff --stat
+	dsc = diff --stat --cached
+	export = archive --format zip --output
+	lo = log --oneline
+	la = log --oneline --author='Yuvraj Saxena'
+	lc = log --oneline --committer='Yuvraj Saxena'
+	ls = log --oneline --stat
+	lf = log --format=fixes
+	lst = ls-tree --full-tree -r HEAD
+	p = push
+	pf = push --force
+	pr = pull --rebase --signoff
+	r = remote
+	ra = remote add
+	rba = rebase --abort
+	re = reset
+	rc = rebase --continue
+	rpc = reset --hard && cherry-pick --continue
+	rs = rebase --skip
+	ru = remote update
+	rv = remote -v
+	s = status
+	su = submodule update --init --recursive
+	ss = show --stat
+	suicide = reset --hard

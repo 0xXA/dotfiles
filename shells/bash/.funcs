@@ -1,0 +1,163 @@
+#!/usr/bin/env bash
+
+function pr_info { # PRINTS INFORMATION
+	printf "%b" "\\e[2K\\r\\e[1;49m[\\e[0m\\e[7;33m?\\e[0m\\e[1;49m]\\e[0m\t\\e[7;37m${1}\\e[0m\n"
+}
+
+function pr_err { # PRINTS ERROR AND EXIT
+	printf "%b" "\\e[2K\\r\\e[1;49m[\\e[0m\\e[7;31m!\\e[0m\\e[1;49m]\\e[0m\t\\e[7;41m${1}\\e[0m\n"
+	return
+}
+
+function installed { # TO CHECK IF PROGRAM INSTALLED
+	(command -v ${1} >/dev/null 2>&1) && return 0
+	return 1
+}
+
+function crex { # CREATE EXECUTABLE FOR C & C++
+	local EXTS=( c cpp cc cxx c++ C CPP )
+
+	for FILE in "${@}"; do
+		[[ "c" = "${FILE##*.}" ]] && {\
+			${CC:?} "${FILE}" -o "${2}"; \
+			continue; \
+		}
+		[[ "${EXTS[*]}" =~ "${FILE##*.}" ]] && \
+			${CXX:?} "${FILE}" -o "${2}"
+	done
+	unset FILE
+}
+
+function c2db { # EXTRACTS ALL DTBS TO FOLDER EITH SCRIPT "edtb"
+    local OUT="${2}"
+    mkdir "${OUT}"
+    edtb "${1}" -o "${OUT}"
+}
+
+function c2ds { # CONVERTS DTB TO DTS
+    dtc -f -s -I dtb -O dts -o "${2}.dts" "${1}"
+}
+
+function formatize { # TO FORMAT C/C++/JAVA FILES
+	if [[ ${#} -eq 3 ]]; then
+		clang-format -i -style="{BasedOnStyle: ${1}, IndentWidth: ${2}}" "${3}"
+	else
+		clang-format -i -style="{IndentWidth: ${1}}" "${2}"
+	fi
+}
+
+function b2ihx { # CONVERT BINARY FILE TO INTEL HEX FILE
+	if ! installed srec_cat; then
+		pr_err "package srecord not found."
+	else
+		srec_cat "$1" -Binary -o "$2" -Intel -address-length=3 -Output_block_size=16
+	fi
+}
+
+function ihx2b { # CONVERT INTEL HEX FILE TO BINARY FILE
+	if ! installed srec_cat; then
+		pr_err "package srecord not found"
+	else
+		srec_cat "$1" -Intel -o "$2" -Binary
+	fi
+}
+
+function encf { # EMCRYPTS FILE WITH PASSWORD THROUGH GNUPG
+	if ! installed gpg; then
+		pr_err "package gnupg not found."
+	else
+		gpg --encrypt --sign --armor -r infectedx27@gmail.com "$1"
+	fi
+}
+
+function cfile { # CREATE A DUMMY C FILE
+cat >> `pwd`/"${1}" <<EOF
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char **argv) {
+        return 0;
+}
+EOF
+}
+
+function proglog { # CAPTURES PROGRAM LOGS
+	if ! installed strace; then
+		pr_err "package strace not found"
+	else
+		strace -fv -s 2048 -o "${1}" "${2}"
+	fi
+}
+
+function fedt { # FIND AND EDIT A FILE IN SUBDIRECTORIES
+	if [[ -z "${1}" ]]; then
+		pr_err "usage: Filename Directory"
+	else
+		find "${2:-$(pwd)}" -name "${1}" -exec ${EDITOR:-vim} {} \;
+	fi
+}
+
+function strop { # VARIOUS OPERATIONS ON STRING
+	for ARG in "$@"; do
+		case ${ARG} in
+			-d)
+				IFS=$'\n' read -d "" -ra trimed <<< "${2//$3/$'\n'}"
+				printf '%s\n' "${trimed[@]}"
+				break
+				;;
+			-r)
+				[[ ${2} =~ ${3} ]] && \
+					printf '%s\n' "${BASH_REMATCH[1]}"
+				break
+				;;
+			-o)
+				printf '%s\n' "${2//${3}}"
+				break
+				;;
+			-s)
+				printf '%s\n' "${2/${3}}"
+				break
+				;;
+			-e)
+				printf '%s\n' "${2%%${3}}"
+				break
+				;;
+			*)
+				pr_err "undefined argument"
+			;;
+	esac
+done
+}
+
+function deldog {
+	local FILE="${1}"
+	: "$(curl -sf --data-binary @"${FILE:?}" https://del.dog/documents)" || {
+		pr_err "not able to post the document"
+	}
+	: $(jq -r .key <<< ${_})
+	pr_info "https://del.dog/raw/${_}"
+}
+
+function gddl { # DOWNLOAD FILE FROM GOOGLE DRIVE WITH 'gdrive'
+	if [[ "${1}" = "-f" ]]; then
+		shift
+		for FILE in "${@}"; do
+			[[ -n "${FILE}" ]] && \
+				gdrive download `gdrive list | grep -Po "([[:alnum:]_-]*)(?= *${FILE})"`
+	        done
+		unset FILE
+	elif [[ "${1}" = "-u" ]]; then
+		shift
+		for URL in "${@}"; do
+			[[ -n "${URL}" ]] && \
+				gdrive download `grep -Po '(id=|folders/|d/)\K[[:alnum:]_-]*' <<< "${URL}"`
+		done
+		unset URL
+	else
+		pr_err "-f download files present in your google drive.e.g,\n\t${FUNCNAME[*]} -f yuvraj.txt alina.txt\n\n-u downloads file from a gdrive url.e.g,\n\t${FUNCNAME[*]} -u https://drive.google.com/file/d/1y7noyg8Lb0pnSiEhQAd7QtvZmtn68yVA/view?usp=drivesdk"
+	fi
+}
+
+function bgrun { # RUN A COMMAND IN BACKGROUNG
+	(nohup "$@" &>/dev/null &)
+}
