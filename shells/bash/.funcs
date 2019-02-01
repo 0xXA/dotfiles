@@ -154,7 +154,7 @@ function gddl { # DOWNLOAD FILE FROM GOOGLE DRIVE WITH 'gdrive'
 		done
 		unset URL
 	else
-		pr_err "-f download files present in your google drive.e.g,\n\t${FUNCNAME[*]} -f yuvraj.txt alina.txt\n\n-u downloads file from a gdrive url.e.g,\n\t${FUNCNAME[*]} -u https://drive.google.com/file/d/1y7noyg8Lb0pnSiEhQAd7QtvZmtn68yVA/view?usp=drivesdk"
+		pr_err "-f download files present in your google drive.e.g,\n\t${FUNCNAME[*]} -f yuvraj.txt alina.txt\n\n\t-u downloads file from a gdrive url.e.g,\n\t${FUNCNAME[*]} -u https://drive.google.com/file/d/1y7noyg8Lb0pnSiEhQAd7QtvZmtn68yVA/view?usp=drivesdk"
 	fi
 }
 
