@@ -9,21 +9,21 @@ function pr_err { # PRINTS ERROR AND EXIT
 	return
 }
 
-function installed { # TO CHECK IF PROGRAM INSTALLED
+function installed { # CHECK IF PROGRAM INSTALLED
 	(command -v ${1} >/dev/null 2>&1) && return 0
 	return 1
 }
 
 function crex { # CREATE EXECUTABLE FOR C & C++
-	local EXTS=( c cpp cc cxx c++ C CPP )
+	local EXTS=( cpp cc cxx c++ C CPP )
 
 	for FILE in "${@}"; do
 		[[ "c" = "${FILE##*.}" ]] && {\
-			${CC:?} "${FILE}" -o "${2}"; \
+			${CC:?} "${FILE}" -o "${FILR%%.*}"; \
 			continue; \
 		}
 		[[ "${EXTS[*]}" =~ "${FILE##*.}" ]] && \
-			${CXX:?} "${FILE}" -o "${2}"
+			${CXX:?} "${FILE}" -o "${FILE%%.*}"
 	done
 	unset FILE
 }
@@ -46,7 +46,7 @@ function formatize { # TO FORMAT C/C++/JAVA FILES
 	fi
 }
 
-function b2ihx { # CONVERT BINARY FILE TO INTEL HEX FILE
+function b2ihx { # CONVERTS BINARY FILE TO INTEL HEX FILE
 	if ! installed srec_cat; then
 		pr_err "package srecord not found."
 	else
@@ -54,7 +54,7 @@ function b2ihx { # CONVERT BINARY FILE TO INTEL HEX FILE
 	fi
 }
 
-function ihx2b { # CONVERT INTEL HEX FILE TO BINARY FILE
+function ihx2b { # CONVERTS INTEL HEX FILE TO BINARY FILE
 	if ! installed srec_cat; then
 		pr_err "package srecord not found"
 	else
@@ -62,7 +62,7 @@ function ihx2b { # CONVERT INTEL HEX FILE TO BINARY FILE
 	fi
 }
 
-function encf { # EMCRYPTS FILE WITH PASSWORD THROUGH GNUPG
+function encf { # ENCRYPTS FILE WITH PASSWORD THROUGH GNUPG
 	if ! installed gpg; then
 		pr_err "package gnupg not found."
 	else
@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
 EOF
 }
 
-function proglog { # CAPTURES PROGRAM LOGS
+function proglog { # CAPTURES PROGRAM LOG
 	if ! installed strace; then
 		pr_err "package strace not found"
 	else
@@ -129,7 +129,7 @@ function strop { # VARIOUS OPERATIONS ON STRING
 done
 }
 
-function deldog {
+function deldog { # UPLOAD FILE TO DELDOG
 	local FILE="${1}"
 	: "$(curl -sf --data-binary @"${FILE:?}" https://del.dog/documents)" || {
 		pr_err "not able to post the document"
@@ -158,6 +158,6 @@ function gddl { # DOWNLOAD FILE FROM GOOGLE DRIVE WITH 'gdrive'
 	fi
 }
 
-function bgrun { # RUN A COMMAND IN BACKGROUNG
+function bgrun { # RUN A COMMAND IN BACKGROUND
 	(nohup "$@" &>/dev/null &)
 }
