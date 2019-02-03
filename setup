@@ -7,7 +7,7 @@ function install_packages {
 	local DISTRO_VERSION=`lsb_release -r | sed 's/.*\s//'`
 	sudo dpkg --add-architecture i386
 	wget -qnc https://dl.winehq.org/wine-builds/winehq.key
-	sudo apt-key add winehq.key && fm winehq.key
+	sudo apt-key add winehq.key && rm winehq.key
 	if [[ "${DISTRO_VERSION}" = "18.10" ]]; then
 		sudo apt-add-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ cosmic main'
 	elif [[ "${DOSTRO_VERSION}" = "18.04" ]]; then
