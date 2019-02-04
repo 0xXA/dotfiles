@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-function pr_info { # PRINTS INFORMATION
+function pr_info { # PRINT INFORMATION
 	printf "%b" "\\e[2K\\r\\e[1;49m[\\e[0m\\e[7;33m?\\e[0m\\e[1;49m]\\e[0m\t\\e[7;37m${1}\\e[0m\n"
 }
 
-function pr_err { # PRINTS ERROR AND EXIT
+function pr_err { # PRINT ERROR AND EXIT
 	printf "%b" "\\e[2K\\r\\e[1;49m[\\e[0m\\e[7;31m!\\e[0m\\e[1;49m]\\e[0m\t\\e[7;41m${1}\\e[0m\n"
 	return
 }
@@ -15,26 +15,31 @@ function installed { # CHECK IF PROGRAM INSTALLED
 }
 
 function crex { # CREATE EXECUTABLE FOR C & C++
-	local EXTS=( cpp cc cxx c++ C CPP )
+	local EXTS=( cpp cc cxx c++ C CPP ) ARGS=()
 
+	for ARG in "${@}"; do
+		[[ "${ARG}" =~ -([[:alnum:]]*) ]] && \
+			ARGS+="${ARG} "
+	done
+	unset ARG
 	for FILE in "${@}"; do
 		[[ "c" = "${FILE##*.}" ]] && {\
-			${CC:?} "${FILE}" -o "${FILR%%.*}"; \
+			${CC:?} ${ARGS[@]} "${FILE}" -o "${FILE%%.*}"; \
 			continue; \
 		}
 		[[ "${EXTS[*]}" =~ "${FILE##*.}" ]] && \
-			${CXX:?} "${FILE}" -o "${FILE%%.*}"
+			${CXX:?} ${ARGS[@]} "${FILE}" -o "${FILE%%.*}"
 	done
 	unset FILE
 }
 
-function c2db { # EXTRACTS ALL DTBS TO FOLDER EITH SCRIPT "edtb"
+function c2db { # EXTRACT ALL DTBS TO FOLDER EITH SCRIPT "edtb"
     local OUT="${2}"
     mkdir "${OUT}"
     edtb "${1}" -o "${OUT}"
 }
 
-function c2ds { # CONVERTS DTB TO DTS
+function c2ds { # CONVERT DTB TO DTS
     dtc -f -s -I dtb -O dts -o "${2}.dts" "${1}"
 }
 
@@ -46,7 +51,7 @@ function formatize { # TO FORMAT C/C++/JAVA FILES
 	fi
 }
 
-function b2ihx { # CONVERTS BINARY FILE TO INTEL HEX FILE
+function b2ihx { # CONVERT BINARY FILE TO INTEL HEX FILE
 	if ! installed srec_cat; then
 		pr_err "package srecord not found."
 	else
@@ -54,7 +59,7 @@ function b2ihx { # CONVERTS BINARY FILE TO INTEL HEX FILE
 	fi
 }
 
-function ihx2b { # CONVERTS INTEL HEX FILE TO BINARY FILE
+function ihx2b { # CONVERT INTEL HEX FILE TO BINARY FILE
 	if ! installed srec_cat; then
 		pr_err "package srecord not found"
 	else
@@ -62,7 +67,7 @@ function ihx2b { # CONVERTS INTEL HEX FILE TO BINARY FILE
 	fi
 }
 
-function encf { # ENCRYPTS FILE WITH PASSWORD THROUGH GNUPG
+function encf { # ENCRYPT FILE WITH PASSWORD THROUGH GNUPG
 	if ! installed gpg; then
 		pr_err "package gnupg not found."
 	else
@@ -81,7 +86,7 @@ int main(int argc, char **argv) {
 EOF
 }
 
-function proglog { # CAPTURES PROGRAM LOG
+function proglog { # CAPTURE PROGRAM LOG
 	if ! installed strace; then
 		pr_err "package strace not found"
 	else
@@ -89,7 +94,7 @@ function proglog { # CAPTURES PROGRAM LOG
 	fi
 }
 
-function fedt { # FIND AND EDIT A FILE IN SUBDIRECTORIES
+function fedt { # FIND AND EDIT A FILE
 	if [[ -z "${1}" ]]; then
 		pr_err "usage: Filename Directory"
 	else
@@ -97,7 +102,7 @@ function fedt { # FIND AND EDIT A FILE IN SUBDIRECTORIES
 	fi
 }
 
-function strop { # VARIOUS OPERATIONS ON STRING
+function strop { # OPERATION ON STRING
 	for ARG in "$@"; do
 		case ${ARG} in
 			-d)
