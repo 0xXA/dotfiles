@@ -28,9 +28,7 @@ function setup_gpgkeys {
 
 function setup_confs {
 	[[ ! -d ~/infection ]] && \
-		mkdir -p ~/infection/tests/{shellscripts,c}
-	[[ "$(grep -o "infection" "${HOME}/profile")" != *infection* ]] && \
-		printf "%b" "PATH=$HOME/infection/tests/c:$HOME/infection/tests/shellscripts:$PATH" >> "$HOME/profile"
+		mkdir -p ~/infection/tests/c
 	cp `pwd`/.gitconfig ~/.gitconfig
 	cp `pwd`/shells/bash/@(.|)[a-zA-Z]* ~/
 	setup_gpgkeys
