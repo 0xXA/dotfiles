@@ -16,7 +16,7 @@ function install_packages {
 		sudo apt-add-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ xenial main'
 	fi
 	sudo apt-get update
-	pkg install "${packages[@]}"
+	sudo apt-get install "${packages[@]}"
 }
 
 function setup_gpgkeys {
