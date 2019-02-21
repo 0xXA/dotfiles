@@ -78,10 +78,10 @@
 	confirmHardReset = true
 
 [sendemail]
-	from = Yuvraj Saxena <infectedx27@gmail.com>
+	from = Yuvraj Saxena <ysaxenax@gmail.com>
 	smtpencryption = tls
 	smtpserver = smtp.gmail.com
-	smtpuser = infectedx27@gmail.com
+	smtpuser = ysaxenax@gmail.com
 	smtpserverport = 587
 	multiedit = true
 	confirm = always
@@ -101,8 +101,8 @@
 
 [user]
 	name = Yuvraj Saxena
-	email = infectedx27@gmail.com
-	signingkey = 2BF9C193F44044F11A1AE5040714FDDBD12AB53F
+	email = ysaxenax@gmail.com
+	signingkey = CF0062618A6637C0
 [web]
         browser = firefox
 [http]
