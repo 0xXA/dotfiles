@@ -16,13 +16,13 @@ function install_packages {
 		sudo apt-add-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ xenial main'
 	fi
 	sudo apt-get update
-	sudo apt-get install "${packages[@]}"
+	sudo apt-get install winehq-devel "${packages[@]}"
 }
 
 function setup_gpgkeys {
 	gpg_keys=( 'github.asc' )
 	for gpgk in "${gpg_keys[@]}"; do \
-		gpg --import `pwd`/keys/$gpgk; \
+		sudo gpg --import `pwd`/keys/$gpgk; \
 	done
 }
 
