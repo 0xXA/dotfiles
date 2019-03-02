@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
 
+shopt -s autocd
+shopt -s cdable_vars
 shopt -s checkhash
 shopt -s checkwinsize
-shopt -s cdable_vars
-shopt -s autocd
 shopt -s cmdhist
 shopt -s dirspell
 shopt -s extglob
+shopt -s globstar
+shopt -s histappend
+shopt -s histverify
 shopt -s hostcomplete
-shopt -s nocaseglob
-shopt -s nocasematch
 
 alias cls='clear'
 alias cp='cp -i'
@@ -32,10 +33,11 @@ alias mv='mv -i'
 alias rm='rm -i --preserve-root'
 alias vdir='vdir --color=auto -h'
 
-export EDITOR='vim'
-export CC='clang'
-export AS='as'
 export AR='ar'
-export CXX='clang++'
-export LD=ld
-export GPG_TTY=$(tty)
+export AS='as'
+export CC='gcc'
+export CXX='g++'
+export HISTFILE="$HOME/.bash_history"
+export HISTSIZE=4096
+export HISTFILESIZE=16384
+export HISTCONTROL="ignoreboth"
