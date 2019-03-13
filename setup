@@ -23,7 +23,7 @@ function install_packages {
 	fi
 }
 
-function setup_gpgkeys {
+function install_gpgkeys {
 	gpg_keys=( 'github.asc' )
 	for gpgk in "${gpg_keys[@]}"; do \
 		gpg --import `pwd`/keys/$gpgk; \
@@ -31,12 +31,12 @@ function setup_gpgkeys {
 	unset gpg_keys
 }
 
-function setup_confs {
+function install_confs {
 	cp `pwd`/.gitconfig ~/.gitconfig
 	cp `pwd`/shells/bash/@(.|)[a-zA-Z]* ~/
 }
 
-function setup_confs {
+function install_confs {
 	cp `pwd`/.gitconfig ~/.gitconfig
 
 	local files=(.bashrc .functions .variables profile)
@@ -53,5 +53,5 @@ function setup_confs {
 }
 
 [[ -n "${install_packages}" ]] && install_packages
-[[ -n "${setup_confs}" ]] && setup_confs
-[[ -n "${setup_gpgkeys}" ]] && setup_gpgkeys
+[[ -n "${install_confs}" ]] && install_confs
+[[ -n "${install_gpgkeys}" ]] && install_gpgkeys
