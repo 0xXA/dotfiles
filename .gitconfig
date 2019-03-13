@@ -104,7 +104,7 @@
 	email = ysaxenax@gmail.com
 	signingkey = CF0062618A6637C0
 [web]
-        browser = firefox
+        browser = chrome-beta
 [http]
 	cookiefile = /home/xa/.gitcookies
 	postBuffer = 524288000
@@ -113,7 +113,6 @@
 	fsckObjects = false
 
 [alias]
-        one = show -s --pretty='format:%h (\"%s\")'
 	a = add
 	aa = add -A
 	cs = commit -s
@@ -135,6 +134,7 @@
 	ls = log --oneline --stat
 	lf = log --format=fixes
 	lst = ls-tree --full-tree -r HEAD
+	one = show -s --pretty='format:%h (\"%s\")'
 	p = push
 	pf = push --force
 	pr = pull --rebase --signoff
@@ -142,12 +142,12 @@
 	ra = remote add
 	rba = rebase --abort
 	re = reset
-	rc = rebase --continue
+	rbc = rebase --continue
 	rpc = reset --hard && cherry-pick --continue
-	rs = rebase --skip
+	rbs = rebase --skip
 	ru = remote update
 	rv = remote -v
 	s = status
 	su = submodule update --init --recursive
 	ss = show --stat
-	suicide = reset --hard
+	rh = reset --hard
