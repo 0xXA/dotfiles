@@ -1,82 +1,82 @@
 #!/usr/bin/env bash
 
-function pr_info { # PRINT INFORMATION
+function pr_info { # print information
 	printf "%b" "\\e[2K\\r\\e[1;49m[\\e[0m\\e[7;33m?\\e[0m\\e[1;49m]\\e[0m\t\\e[7;37m${1}\\e[0m\n"
 }
 
-function pr_err { # PRINT ERROR AND EXIT
+function pr_err { # print error and exit
 	printf "%b" "\\e[2K\\r\\e[1;49m[\\e[0m\\e[7;31m!\\e[0m\\e[1;49m]\\e[0m\t\\e[7;41m${1}\\e[0m\n"
 	return
 }
 
-function installed { # CHECK IF PROGRAM INSTALLED
+function installed { # check if program installed
 	(command -v ${1} >/dev/null 2>&1) && return 0
 	return 1
 }
 
-function crex { # CREATE EXECUTABLE FOR C & C++
-	local EXTS=( cpp cc cxx c++ C CPP ) ARGS=()
+function crex { # create executable for c & c++
+	local exts=( cpp cc cxx c++ C CPP ) ARGS=()
 
 	for ARG in "${@}"; do
-		[[ "${ARG}" =~ -([[:alnum:]]*) ]] && \
-			ARGS+="${ARG} "
+		[[ "${arg}" =~ -([[:alnum:]]*) ]] && \
+			args+="${arg} "
 	done
-	unset ARG
-	for FILE in "${@}"; do
-		[[ "c" = "${FILE##*.}" ]] && {\
-			${CC:?} ${ARGS[@]} "${FILE}" -o "${FILE%%.*}"; \
+	unset arg
+	for file in "${@}"; do
+		[[ "c" = "${file##*.}" ]] && {\
+			${CC:?} ${args[@]} "${file}" -o "${file%%.*}"; \
 			continue; \
 		}
-		[[ "${EXTS[*]}" =~ "${FILE##*.}" ]] && \
-			${CXX:?} ${ARGS[@]} "${FILE}" -o "${FILE%%.*}"
+		[[ "${exts[*]}" =~ "${file##*.}" ]] && \
+			${CXX:?} ${args[@]} "${file}" -o "${file%%.*}"
 	done
-	unset FILE
+	unset file
 }
 
-function c2db { # EXTRACT ALL DTBS TO FOLDER EITH SCRIPT "edtb"
-    local OUT="${2}"
-    mkdir "${OUT}"
-    edtb "${1}" -o "${OUT}"
+function c2db { # extract all dtbs to folder eith script "edtb"
+    local out="${2}" edtb="edtb"
+    mkdir "${out}"
+    ${edtb:?} "${1}" -o "${out}"
 }
 
-function c2ds { # CONVERT DTB TO DTS
+function c2ds { # convert dtb to dts
     dtc -f -s -I dtb -O dts -o "${2}.dts" "${1}"
 }
 
-function formatize { # TO FORMAT C/C++/JAVA FILES
-	if [[ ${#} -eq 3 ]]; then
-		clang-format -i -style="{BasedOnStyle: ${1}, IndentWidth: ${2}}" "${3}"
-	else
-		clang-format -i -style="{IndentWidth: ${1}}" "${2}"
-	fi
+function formatize { # to format c/c++/java files
+	[[ `installed clang` ]] && {
+		[[ ${#} -eq 3 ]] && {
+			clang-format -i -style="{BasedOnStyle: ${1}, IndentWidth: ${2}}" "${3}"
+		} ||\
+			clang-format -i -style="{IndentWidth: ${1}}" "${2}"
+	} ||\
+		pr_err "clang not installed"
 }
 
-function b2ihx { # CONVERT BINARY FILE TO INTEL HEX FILE
-	if ! installed srec_cat; then
-		pr_err "package srecord not found."
-	else
+function b2ihx { # convert binary file to intel hex file
+	[[ `installed srec_cat` ]] && {
 		srec_cat "$1" -Binary -o "$2" -Intel -address-length=3 -Output_block_size=16
-	fi
+	} ||\
+		pr_err "package srecord not found."
 }
 
-function ihx2b { # CONVERT INTEL HEX FILE TO BINARY FILE
-	if ! installed srec_cat; then
-		pr_err "package srecord not found"
-	else
+function ihx2b { # convert intel hex file to binary file
+	[[ `installed srec_cat` ]] && {
 		srec_cat "$1" -Intel -o "$2" -Binary
-	fi
+	} ||\
+		pr_err "package srecord not found"
 }
 
-function encf { # ENCRYPT FILE WITH PASSWORD THROUGH GNUPG
-	if ! installed gpg; then
-		pr_err "package gnupg not found."
-	else
+function encf { # encrypt file with password through gnupg
+	[[ `installed gpg` ]] && {
 		gpg --encrypt --sign --armor -r ysaxenax@gmail.com "$1"
-	fi
+	} ||\
+		pr_err "package gnupg not found."
 }
 
-function cfile { # CREATE A DUMMY C FILE
-cat >> `pwd`/"${1}" <<EOF
+function cfile { # create a dummy c file
+	local filename="${1}"
+cat >> `pwd`/"${filename:?}" <<EOF
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -86,89 +86,49 @@ int main(int argc, char **argv) {
 EOF
 }
 
-function proglog { # CAPTURE PROGRAM LOG
-	if ! installed strace; then
-		pr_err "package strace not found"
-	else
+function proglog { # capture program log
+	[[ `installed strace` ]] && {
 		strace -fv -s 2048 -o "${1}" "${2}"
-	fi
+	} ||\
+		pr_err "package strace not found"
 }
 
-function fedt { # FIND AND EDIT A FILE
-	if [[ -z "${1}" ]]; then
+function fedt { # find and edit a file
+	[[ -n "${1}" ]] && {
+		find "${2:-}" -name "${1}" -exec ${EDITOR:-vim} {} \;
+	} ||\
 		pr_err "usage: Filename Directory"
-	else
-		find "${2:-$(pwd)}" -name "${1}" -exec ${EDITOR:-vim} {} \;
-	fi
 }
 
-function strop { # OPERATION ON STRING
-	for ARG in "$@"; do
-		case ${ARG} in
-			-d)
-				IFS=$'\n' read -d "" -ra trimed <<< "${2//$3/$'\n'}"
-				printf '%s\n' "${trimed[@]}"
-				break
-				;;
-			-r)
-				[[ ${2} =~ ${3} ]] && \
-					printf '%s\n' "${BASH_REMATCH[1]}"
-				break
-				;;
-			-o)
-				printf '%s\n' "${2//${3}}"
-				break
-				;;
-			-s)
-				printf '%s\n' "${2/${3}}"
-				break
-				;;
-			-e)
-				printf '%s\n' "${2%%${3}}"
-				break
-				;;
-			*)
-				pr_err "undefined argument"
-			;;
-	esac
-done
-}
-
-function deldog { # UPLOAD FILE TO DELDOG
-	local FILE="${1}"
-	: "$(curl -sf --data-binary @"${FILE:?}" https://del.dog/documents)" || {
+function deldog { # upload file to deldog
+	local file="${1}"
+	: "$(curl -sf --data-binary @"${file:?}" https://del.dog/documents)" || {
 		pr_err "not able to post the document"
 	}
 	: $(jq -r .key <<< ${_})
 	pr_info "https://del.dog/raw/${_}"
 }
 
-function gddl { # DOWNLOAD FILE FROM GOOGLE DRIVE WITH 'gdrive'
+function gddl { # download file from google drive with 'gdrive'
 	[[ "${1}" = "-f" ]] && {
 		shift
-		for FILE in "${@}"; do
-			[[ -n "${FILE}" ]] && \
-				gdrive download `gdrive list | grep -Po "([[:alnum:]_-]*)(?= *${FILE})"`
+		for file in "${@}"; do
+			[[ -n "${file}" ]] && \
+				gdrive download `gdrive list | grep -Po "([[:alnum:]_-]*)(?= *${file})"`
 	        done
-		unset FILE
-	} || [[ "${1}" = "--durl" ]] && {
+		unset file
+	} ||\
+	[[ "${1}" = "--durl" ]] && {
 		shift
-		for URL in "${@}"; do
-			[[ -n "${URL}" ]] && \
-				gdrive download `grep -Po '(id=|folders/|d/)\K[[:alnum:]_-]*' <<< "${URL}"`
+		for url in "${@}"; do
+			[[ -n "${url}" ]] && \
+				gdrive download `grep -Po '(id=|folders/|d/)\K[[:alnum:]_-]*' <<< "${url}"`
 		done
-		unset URL
-	} || [[ "${1}" = "-u" ]] && {
-		shift
-		for FILE in "${@}"; do
-			[[ -n "${FILE}" ]] && \
-				gdrive upload "${FILE}"
-		done
-		unset FILE
-	} ||
+		unset url
+	} ||\
 		pr_err "-f download files present in your google drive.e.g,\n\t${FUNCNAME[*]} -f yuvraj.txt alina.txt\n\n\t-u downloads file from a gdrive url.e.g,\n\t${FUNCNAME[*]} -u https://drive.google.com/file/d/1y7noyg8Lb0pnSiEhQAd7QtvZmtn68yVA/view?usp=drivesdk"
 }
 
-function bgrun { # RUN A COMMAND IN BACKGROUND
+function bgrun { # run a command in background
 	(nohup "$@" &>/dev/null &)
 }
