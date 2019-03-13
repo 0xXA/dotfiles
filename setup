@@ -22,15 +22,15 @@ function install_packages {
 }
 
 function install_wine {
-	local DISTRO_VERSION=`lsb_release -r | sed 's/.*\s//'`
+	local distro_version=`lsb_release -r | sed 's/.*\s//'`
 	sudo dpkg --add-architecture i386
 	wget -qnc https://dl.winehq.org/wine-builds/winehq.key
 	sudo apt-key add winehq.key && rm winehq.key
 	
-	[[ "${DISTRO_VERSION}" = "18.10" ]] && {
+	[[ "${distro_version}" = "18.10" ]] && {
 		sudo apt-add-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ cosmic main'
 	} ||\
-	[[ "${DOSTRO_VERSION}" = "18.04" ]] && {
+	[[ "${dostro_version}" = "18.04" ]] && {
 	sudo apt-add-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ bionic main'
 	} ||\
 		sudo apt-add-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ xenial main'
@@ -38,7 +38,7 @@ function install_wine {
 	sudo apt-get install winehq-devel "${packages[@]}"
 }
 
-function setup_gpgkeys {
+function install_gpgkeys {
 	gpg_keys=( 'github.asc' )
 	for gpgk in "${gpg_keys[@]}"; do \
 		sudo gpg --import `pwd`/keys/$gpgk; \
@@ -46,12 +46,12 @@ function setup_gpgkeys {
 	unset gpg_keys
 }
 
-function setup_confs {
+function install_confs {
 	cp `pwd`/.gitconfig ~/.gitconfig
 	cp `pwd`/shells/bash/@(.|)[a-zA-Z]* ~/
 }
 
 [[ -n "${install_packages}" ]] && install_packages
 [[ -n "${install_wine}" ]] && install_wine
-[[ -n "${setup_confs}" ]] && setup_confs
-[[ -n "${setup_gpgkeys}" ]] && setup_gpgkeys
+[[ -n "${install_confs}" ]] && install_confs
+[[ -n "${install_gpgkeys}" ]] && install_gpgkeys
