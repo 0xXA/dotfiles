@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/data/data/com.termux/files/usr/bin/bash
 
 shopt -s extglob
 
@@ -9,39 +9,24 @@ shopt -s extglob
 } || exit 1
 
 function install_packages {
-	local packages=( 'ccache' 'automake' 'flex' 'lzop' 'bison' 'gperf' 'build-essential' 'zip' 'curl' 'zlib1g-dev' 'zlib1g-dev:i386' 'g++-multilib' 'git' 'python-networkx' 'libxml2-utils' 'bzip2' 'libbz2-dev' 'libbz2-1.0' 'libghc-bzlib-dev' 'sed' 'grep' 'squashfs-tools' 'pngcrush' 'schedtool' 'dpkg-dev' 'liblz4-tool' 'make' 'optipng' 'maven' 'libssl-dev' 'pwgen' 'libswitch-perl' 'policycoreutils' 'minicom' 'libxml-sax-base-perl' 'libxml-simple-perl' 'bc' 'libc6-dev-i386' 'lib32ncurses5-dev' 'x11proto-core-dev' 'libx11-dev' 'lib32z-dev' 'libgl1-mesa-dev' 'xsltproc' 'unzip' 'gcc-8' )
+	local packages=( 'binutils' 'coreutils' 'curl' 'dirmngr' 'file' 'gdb' 'git' 'gnupg' 'grep' 'jq' 'make' 'p7zip' 'patch' 'rclone' 'rsync' 'sed' 'silversearcher-ag' 'strace' 'tar' 'termux-api' 'termux-exec' 'tree' 'util-linux' 'unstable-repo' 'unzip' 'vim' 'wget' 'x11-repo' 'xz-utils' 'yasm' 'zip' )
 
 	[[ -n "`dpkg --get-selections | xargs apt-cache policy {} | grep -1 Installed | sed -r 's/(:|Installed: |Candidate: )//' | uniq -u | tac | sed '/--/I,+1 d' | tac | sed '$d' | sed -n 1~2p | xargs`" ]] && {
-		sudo apt-get update
-		sudo apt-get upgrade
+		apt-get update;
+		apt-get upgrade;
 	}
 	
-	if ! dpkg --status "${packages[@]}" > /dev/null 2>&1; then
-		sudo apt-get install "${packages[@]}"
+	if ! dpkg --status "${packages[@]}" qemu-system-x86_64 qemu-user-x86_64  > /dev/null 2>&1; then
+		apt-get install "${packages[@]}"
+		[[ -n "${install_qemu}" ]] && \
+			apt-get install qemu-system-x86_64 qemu-user-x86_64
 	fi
-}
-
-function install_wine {
-	local DISTRO_VERSION=`lsb_release -r | sed 's/.*\s//'`
-	sudo dpkg --add-architecture i386
-	wget -qnc https://dl.winehq.org/wine-builds/winehq.key
-	sudo apt-key add winehq.key && rm winehq.key
-	
-	[[ "${DISTRO_VERSION}" = "18.10" ]] && {
-		sudo apt-add-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ cosmic main'
-	} ||\
-	[[ "${DOSTRO_VERSION}" = "18.04" ]] && {
-	sudo apt-add-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ bionic main'
-	} ||\
-		sudo apt-add-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ xenial main'
-	sudo apt-get update
-	sudo apt-get install winehq-devel "${packages[@]}"
 }
 
 function setup_gpgkeys {
 	gpg_keys=( 'github.asc' )
 	for gpgk in "${gpg_keys[@]}"; do \
-		sudo gpg --import `pwd`/keys/$gpgk; \
+		gpg --import `pwd`/keys/$gpgk; \
 	done
 	unset gpg_keys
 }
@@ -51,7 +36,22 @@ function setup_confs {
 	cp `pwd`/shells/bash/@(.|)[a-zA-Z]* ~/
 }
 
+function setup_confs {
+	cp `pwd`/.gitconfig ~/.gitconfig
+
+	local files=(.bashrc .functions .variables profile)
+	for file in "${FILES[@]}"; do
+		[[ ${file} = "profile" ]] && {
+			cp `pwd`/shells/bash/$file $PREFIX/etc/
+		} || cp `pwd`/shells/bash/$file ~/
+        done
+	unset files file
+
+	cp -r `pwd`/.termux/ ~/
+	[[ -e $PREFIX/etc/motd ]] && \
+		rm $PREFIX/etc/motd
+}
+
 [[ -n "${install_packages}" ]] && install_packages
-[[ -n "${install_wine}" ]] && install_wine
 [[ -n "${setup_confs}" ]] && setup_confs
 [[ -n "${setup_gpgkeys}" ]] && setup_gpgkeys

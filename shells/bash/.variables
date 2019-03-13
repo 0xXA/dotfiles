@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/data/data/com.termux/files/usr/bin/env bash
 
 shopt -s autocd
 shopt -s cdable_vars
@@ -36,6 +36,7 @@ alias vdir='vdir --color=auto -h'
 export AR='ar'
 export AS='as'
 export CC='gcc'
+export CHIP='/storage/DC83-7ECB'
 export CXX='g++'
 export HISTFILE="$HOME/.bash_history"
 export HISTSIZE=4096
