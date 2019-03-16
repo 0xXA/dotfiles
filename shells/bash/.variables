@@ -38,6 +38,7 @@ export AS='as'
 export CC='gcc'
 export CHIP='/storage/DC83-7ECB'
 export CXX='g++'
+export GPG_TTY=`tty`
 export HISTFILE="$HOME/.bash_history"
 export HISTSIZE=4096
 export HISTFILESIZE=16384

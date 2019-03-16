@@ -5,7 +5,6 @@
 export HOME="/home/`whoami`"
 export TMPDIR="/tmp"
 export EDITOR="`whereis vim | sed 's/.*:\s*//'`"
-export GPG_TTY=`tty`
 
 umask 0077
 
