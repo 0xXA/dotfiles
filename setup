@@ -36,7 +36,7 @@ function install_wine {
 	} ||\
 		sudo apt-add-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ xenial main'
 	sudo apt-get update
-	sudo apt-get install winehq-devel "${packages[@]}"
+	sudo apt-get install winehq-devel
 }
 
 function install_gpgkeys {
