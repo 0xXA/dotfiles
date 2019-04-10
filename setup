@@ -9,14 +9,11 @@ shopt -s extglob
 } || exit 1
 
 function install_packages {
-	local packages=( 'binutils' 'coreutils' 'curl' 'dirmngr' 'file' 'gdb' 'git' 'gnupg' 'grep' 'jq' 'make' 'p7zip' 'patch' 'rclone' 'rsync' 'sed' 'silversearcher-ag' 'strace' 'tar' 'termux-api' 'termux-exec' 'tree' 'util-linux' 'unstable-repo' 'unzip' 'vim' 'wget' 'x11-repo' 'xz-utils' 'yasm' 'zip' )
+	local packages=( 'binutils' 'coreutils' 'curl' 'dirmngr' 'file' 'gdb' 'git' 'gnupg' 'grep' 'jq' 'make' 'p7zip' 'patch' 'rclone' 'rsync' 'sed' 'silversearcher-ag' 'strace' 'tar' 'termux-api' 'termux-exec' 'tree' 'util-linux' 'unzip' 'vim' 'wget' 'xz-utils' 'zip' )
 
-	if ! dpkg --status "${packages[@]}" qemu-system-x86_64 qemu-user-x86_64  > /dev/null 2>&1; then
-		apt-get update
-		apt-get upgrade
-		apt-get install "${packages[@]}"
-		[[ -n "${install_qemu}" ]] && \
-			apt-get install qemu-system-x86_64 qemu-user-x86_64
+	if ! dpkg --status "${packages[@]}" >/dev/null 2>&1; then
+		pkg up
+		pkg install "${packages[@]}"
 	fi
 }
 
@@ -31,9 +28,9 @@ function install_gpgkeys {
 function install_confs {
 	cp `pwd`/.gitconfig $HOME/
 
-	local files=(.bashrc .functions .variables profile)
+	local files=(.bashrc .functions .variables .profile)
 	for file in "${files[@]}"; do
-		[[ ${file} = "profile" ]] && {
+		[[ ${file} = ".profile" ]] && {
 			cp `pwd`/shells/bash/$file $PREFIX/etc/
 		} || cp `pwd`/shells/bash/$file $HOME/
         done
