@@ -15,9 +15,9 @@ function installed { # check if program installed
 }
 
 function crex { # create executable for c & c++
-	local exts=( cpp cc cxx c++ C CPP ) ARGS=()
+	local exts=( cpp cc cxx c++ C CPP ) args=()
 
-	for ARG in "${@}"; do
+	for arg in "${@}"; do
 		[[ "${arg}" =~ -([[:alnum:]]*) ]] && \
 			args+="${arg} "
 	done
