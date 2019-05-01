@@ -18,7 +18,7 @@ function install_packages {
 }
 
 function install_gpgkeys {
-	gpg_keys=( 'github.asc' )
+	gpg_keys=( 'git.asc' )
 	for gpgk in "${gpg_keys[@]}"; do \
 		gpg --import `pwd`/keys/$gpgk; \
 	done
