@@ -31,7 +31,7 @@ function install_confs {
 	local files=(.bashrc .functions .variables .profile)
 	for file in "${files[@]}"; do
 		[[ ${file} = ".profile" ]] && {
-			cp `pwd`/shells/bash/$file $PREFIX/etc/
+			cp `pwd`/shells/bash/$file $PREFIX/etc/profile
 		} || cp `pwd`/shells/bash/$file $HOME/
         done
 	unset files file
