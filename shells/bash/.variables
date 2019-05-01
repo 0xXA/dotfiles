@@ -36,11 +36,13 @@ alias vdir='vdir --color=auto -h'
 
 export AR='ar'
 export AS='as'
-export CC='gcc'
+export CC='clang'
 export CHIP='/storage/DC83-7ECB'
-export CXX='g++'
+export CXX='clang++'
 export GPG_TTY=`tty`
 export HISTFILE="$HOME/.bash_history"
 export HISTSIZE=4096
 export HISTFILESIZE=16384
 export HISTCONTROL="ignoreboth"
+export EDITOR='whereis vim | grep -Poi ":\s\K[[:alnum:]/.]*"'
+export TMPDIR='/tmp'
