@@ -40,7 +40,7 @@ function install_wine {
 }
 
 function install_gpgkeys {
-	gpg_keys=( 'github.asc' )
+	gpg_keys=( 'git.asc' )
 	for gpgk in "${gpg_keys[@]}"; do \
 		sudo gpg --import `pwd`/keys/$gpgk; \
 	done
