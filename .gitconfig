@@ -102,7 +102,7 @@
 [user]
 	name = Yuvraj Saxena
 	email = ysaxenax@gmail.com
-	signingkey = 8EAF32506796D144B7808C72EE42DEEF06F2AC26
+	signingkey = 3E7C583C547908AFA31675E46D73EC8DE8100297
 [web]
         browser = chrome-beta
 [http]
