@@ -16,13 +16,14 @@ function installed { # check if program installed
 }
 
 function crex { # create executable for c & c++
-	local exts=( cpp cc cxx c++ C CPP ) ARGS=()
+	local exts=( cpp cc cxx c++ C CPP ) args=()
 
-	for ARG in "${@}"; do
+	for arg in "${@}"; do
 		[[ "${arg}" =~ -([[:alnum:]]*) ]] && \
 			args+="${arg} "
 	done
 	unset arg
+
 	for file in "${@}"; do
 		[[ "c" = "${file##*.}" ]] && {\
 			${CC:?} ${args[@]} "${file}" -o "${file%%.*}"; \
@@ -128,6 +129,13 @@ function cpclip { # copy text or file in clipboard with api addon
 			termux-clipboard-set <<< "${1}"
 	} ||\
 		pr_err "filename or text needed as argument"
+}
+
+function rm_ex { # remove all executable from multiple directories
+	for dname in "${@}"; do
+		[[ ! -d ${dname} ]] && continue;
+		find ${dname} -type f | xargs -r file | grep "ELF" | grep -E "(executable|shared object)" | sed -E 's,./(.*):.*,\1,' | xargs -r rm;
+	done
 }
 
 function bgrun { # run a command in background
