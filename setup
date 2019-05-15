@@ -9,7 +9,7 @@ shopt -s extglob
 } || exit 1
 
 function install_packages {
-	local packages=( 'aria2' 'bat' 'binutils' 'build-essential' 'curl' 'dirmngr' 'exa' 'file' 'gnupg' 'jq' 'p7zip' 'radare2' 'rsync' 'silversearcher-ag' 'strace' 'termux-api' 'termux-exec' 'tree' 'util-linux' 'unzip' 'vim' 'wget' 'zip' 'x11-repo' 'unstable-repo' )
+	local packages=( 'aria2' 'bat' 'binutils' 'build-essential' 'curl' 'dirmngr' 'exa' 'file' 'gnupg' 'jq' 'p7zip' 'radare2' 'rsync' 'silversearcher-ag' 'strace' 'termux-api' 'termux-exec' 'tree' 'unzip' 'vim' 'wget' 'zip' 'x11-repo' 'unstable-repo' )
 
 	if ! dpkg --status "${packages[@]}" >/dev/null 2>&1; then
 		pkg up
