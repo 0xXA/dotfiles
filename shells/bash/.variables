@@ -12,6 +12,7 @@ shopt -s histappend
 shopt -s histverify
 shopt -s hostcomplete
 
+alias cat='bat'
 alias cls='clear'
 alias cp='cp -i'
 alias grep='grep --color=auto'
