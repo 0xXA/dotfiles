@@ -33,6 +33,8 @@ alias mv='mv -i'
 alias rm='rm -i --preserve-root'
 alias sshvm='ssh root@ubnt.centralus.cloudapp.azure.com'
 alias vdir='vdir --color=auto -h'
+alias x32='qemu-i386'
+alias x64='qemu-x86_64'
 
 export AR='ar'
 export AS='as'

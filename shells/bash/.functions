@@ -132,10 +132,31 @@ function cpclip { # copy text or file in clipboard with api addon
 }
 
 function rm_ex { # remove all executable from multiple directories
+	local dname
+
 	for dname in "${@}"; do
 		[[ ! -d ${dname} ]] && continue;
 		find ${dname} -type f | xargs -r file | grep "ELF" | grep -E "(executable|shared object)" | sed -E 's,./(.*):.*,\1,' | xargs -r rm;
 	done
+}
+
+function farun {
+	local pbit if of
+
+	if="${1}"
+	of="${1/.*/}"
+	
+	fasm "${if}" "${of}"
+
+	pbit=$(file ${of} | sed -E 's/.*: //;s/,.*//' | grep -Po '(32|64)')
+
+	unset LD_PRELOAD
+	
+	[[ $pbit -eq 32 ]] && {
+		x32 ./"${of}"
+	} || [[ $pbit -eq 64 ]] && x64 ./"$of"
+
+	export LD_PRELOAD=$PREFIX/lib/libtermux-exec.so
 }
 
 function bgrun { # run a command in background
