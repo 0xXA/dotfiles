@@ -45,4 +45,3 @@ export HISTSIZE=4096
 export HISTFILESIZE=16384
 export HISTCONTROL="ignoreboth"
 export EDITOR='whereis vim | grep -Poi ":\s\K[[:alnum:]/.]*"'
-export TMPDIR='/tmp'
