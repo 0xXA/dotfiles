@@ -102,7 +102,7 @@
 [user]
 	name = Yuvraj Saxena
 	email = ysaxenax@gmail.com
-	signingkey = 3E7C583C547908AFA31675E46D73EC8DE8100297
+	signingkey = 71ACC4894D7F379B25F87989E34FC121DE47FAD7
 [web]
         browser = chrome-beta
 [http]
@@ -117,6 +117,7 @@
 	aa = add -A
 	cs = commit -s
 	cm = commit -am
+	co = checkout
 	csa = commit -sa
 	cam = commit -sam
 	cp = cherry-pick --signoff

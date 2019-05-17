@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/data/data/com.termux/files/usr/bin/bash
 
 function pr_info { # print information
 	printf "%b" "\\e[2K\\r\\e[1;49m[\\e[0m\\e[7;33m?\\e[0m\\e[1;49m]\\e[0m\t\\e[7;37m${1}\\e[0m\n"
@@ -10,7 +10,8 @@ function pr_err { # print error and exit
 }
 
 function installed { # check if program installed
-	(command -v ${1} >/dev/null 2>&1) && return 0
+	command -v ${1} >/dev/null 2>&1 ||\
+		pr_err "${1} is not installed"
 	return 1
 }
 
@@ -22,6 +23,7 @@ function crex { # create executable for c & c++
 			args+="${arg} "
 	done
 	unset arg
+
 	for file in "${@}"; do
 		[[ "c" = "${file##*.}" ]] && {\
 			${CC:?} ${args[@]} "${file}" -o "${file%%.*}"; \
@@ -40,7 +42,8 @@ function c2db { # extract all dtbs to folder eith script "edtb"
 }
 
 function c2ds { # convert dtb to dts
-    dtc -f -s -I dtb -O dts -o "${2}.dts" "${1}"
+    local if=${1} of=${2}
+    dtc -f -s -I dtb -O dts -o "${of:?}.dts" "${in:?}"
 }
 
 function formatize { # to format c/c++/java files
@@ -49,29 +52,22 @@ function formatize { # to format c/c++/java files
 			clang-format -i -style="{BasedOnStyle: ${1}, IndentWidth: ${2}}" "${3}"
 		} ||\
 			clang-format -i -style="{IndentWidth: ${1}}" "${2}"
-	} ||\
-		pr_err "clang not installed"
+	}
 }
 
 function b2ihx { # convert binary file to intel hex file
-	[[ `installed srec_cat` ]] && {
+	[[ `installed srec_cat` ]] && \
 		srec_cat "$1" -Binary -o "$2" -Intel -address-length=3 -Output_block_size=16
-	} ||\
-		pr_err "package srecord not found."
 }
 
 function ihx2b { # convert intel hex file to binary file
-	[[ `installed srec_cat` ]] && {
+	[[ `installed srec_cat` ]] && \
 		srec_cat "$1" -Intel -o "$2" -Binary
-	} ||\
-		pr_err "package srecord not found"
 }
 
 function encf { # encrypt file with password through gnupg
-	[[ `installed gpg` ]] && {
+	[[ `installed gpg` ]] && \
 		gpg --encrypt --sign --armor -r ysaxenax@gmail.com "$1"
-	} ||\
-		pr_err "package gnupg not found."
 }
 
 function cfile { # create a dummy c file
@@ -87,17 +83,13 @@ EOF
 }
 
 function proglog { # capture program log
-	[[ `installed strace` ]] && {
+	[[ `installed strace` ]] && \
 		strace -fv -s 2048 -o "${1}" "${2}"
-	} ||\
-		pr_err "package strace not found"
 }
 
 function fedt { # find and edit a file
-	[[ -n "${1}" ]] && {
+	[[ -n "${1}" ]] && \
 		find "${2:-}" -name "${1}" -exec ${EDITOR:-vim} {} \;
-	} ||\
-		pr_err "usage: Filename Directory"
 }
 
 function deldog { # upload file to deldog
@@ -109,8 +101,8 @@ function deldog { # upload file to deldog
 	pr_info "https://del.dog/raw/${_}"
 }
 
-function gddl { # download file from google drive with 'gdrive'
-	[[ "${1}" = "-f" ]] && {
+function gddl { # download file from google drive with 'gdrive' binary
+	[[ "${1}" = "--df" ]] && {
 		shift
 		for file in "${@}"; do
 			[[ -n "${file}" ]] && \
@@ -118,7 +110,7 @@ function gddl { # download file from google drive with 'gdrive'
 	        done
 		unset file
 	} ||\
-	[[ "${1}" = "--durl" ]] && {
+	[[ "${1}" = "--du" ]] && {
 		shift
 		for url in "${@}"; do
 			[[ -n "${url}" ]] && \
@@ -127,6 +119,15 @@ function gddl { # download file from google drive with 'gdrive'
 		unset url
 	} ||\
 		pr_err "-f download files present in your google drive.e.g,\n\t${FUNCNAME[*]} -f yuvraj.txt alina.txt\n\n\t-u downloads file from a gdrive url.e.g,\n\t${FUNCNAME[*]} -u https://drive.google.com/file/d/1y7noyg8Lb0pnSiEhQAd7QtvZmtn68yVA/view?usp=drivesdk"
+}
+
+function rm_ex { # remove all executable from multiple directories
+	local dname
+
+	for dname in "${@}"; do
+		[[ ! -d ${dname} ]] && continue;
+		find ${dname} -type f | xargs -r file | grep "ELF" | grep -E "(executable|shared object)" | sed -E 's,./(.*):.*,\1,' | xargs -r rm;
+	done
 }
 
 function bgrun { # run a command in background
