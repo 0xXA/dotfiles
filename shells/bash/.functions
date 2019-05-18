@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/bash
+#!/usr/bin/env bash
 
 function pr_info { # print information
 	printf "%b" "\\e[2K\\r\\e[1;49m[\\e[0m\\e[7;33m?\\e[0m\\e[1;49m]\\e[0m\t\\e[7;37m${1}\\e[0m\n"
@@ -43,7 +43,7 @@ function c2db { # extract all dtbs to folder eith script "edtb"
 
 function c2ds { # convert dtb to dts
     local if=${1} of=${2}
-    dtc -f -s -I dtb -O dts -o "${of:?}.dts" "${in:?}"
+    dtc -f -s -I dtb -O dts -o "${of:?}.dts" "${if:?}"
 }
 
 function formatize { # to format c/c++/java files
@@ -102,7 +102,7 @@ function deldog { # upload file to deldog
 }
 
 function gddl { # download file from google drive with 'gdrive' binary
-	[[ "${1}" = "--df" ]] && {
+	[[ "${1}" = "-f" ]] && {
 		shift
 		for file in "${@}"; do
 			[[ -n "${file}" ]] && \
@@ -110,7 +110,7 @@ function gddl { # download file from google drive with 'gdrive' binary
 	        done
 		unset file
 	} ||\
-	[[ "${1}" = "--du" ]] && {
+	[[ "${1}" = "-u" ]] && {
 		shift
 		for url in "${@}"; do
 			[[ -n "${url}" ]] && \
