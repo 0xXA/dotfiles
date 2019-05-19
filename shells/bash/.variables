@@ -11,7 +11,9 @@ shopt -s globstar
 shopt -s histappend
 shopt -s histverify
 shopt -s hostcomplete
+shopt -s expand_aliases
 
+alias add_toolchain='get_tooldir "${@}"; source ~/.bashrc'
 alias cat='bat'
 alias cls='clear'
 alias cp='cp -i'
@@ -42,3 +44,5 @@ export HISTFILE="$HOME/.bash_history"
 export HISTSIZE=4096
 export HISTFILESIZE=16384
 export HISTCONTROL="ignoreboth"
+
+[[ -e $HOME/.tpath ]] && . $HOME/.tpath
