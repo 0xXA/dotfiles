@@ -131,12 +131,11 @@ function rm_ex { # remove all executable from multiple directories
 }
 
 function get_tooldir {
-	for tooldir in $(find "${@}" -type f -xtype f -regex '.*\(-gcc\|clang\)' | xargs -r file | grep "ELF" | grep -E "(executable|GNU/Linux)" | cut -d: -f1 | xargs -r realpath | sed -E 's/(.*bin).*/\1/');do export npath+=":${tooldir}"; done; npath=$( sed 's/^://' <<< $npath | tr ":" "\n" | sort -u | tr "\n" ":" | sed 's/:$//');
+	for tooldir in "$(find "${@}" -type f -xtype f -regex '.*bin\/.*\(-gcc\|clang\)' | xargs -r file | grep -E "(ELF|Python script)" | grep -E "(executable|GNU/Linux)" | cut -d: -f1 | xargs -r realpath | xargs -r dirname )";do export npath+=":${tooldir}"; done; npath=$( sed 's/^://' <<< $npath | tr ":" "\n" | sort -u | tr "\n" ":" | sed 's/:$//');
 	[[ -e $HOME/.tpath ]] && {
 		sed -i d $HOME/.tpath;
 		printf "%b"  "export PATH=$npath:\$PATH" >> ~/.tpath
 	} || printf "%b"  "export PATH=$npath:\$PATH" >> ~/.tpath
-
 	unset npath tooldir
 }
 
