@@ -102,11 +102,11 @@
 [user]
 	name = Yuvraj Saxena
 	email = ysaxenax@gmail.com
-	signingkey = 71ACC4894D7F379B25F87989E34FC121DE47FAD7
+	signingkey = E67A1E3420E4B6C97C933A63CD406837A961C47D
 [web]
         browser = chrome-beta
 [http]
-	cookiefile = /home/xa/.gitcookies
+	cookiefile = /home/vamp/.gitcookies
 	postBuffer = 524288000
 
 [transfer]
