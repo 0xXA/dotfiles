@@ -1,0 +1,144 @@
+#!/usr/bin/env bash
+
+function pr_info { # print information
+	printf "%b" "\\e[2K\\r\\e[1;49m[\\e[0m\\e[7;33m?\\e[0m\\e[1;49m]\\e[0m\t\\e[7;37m${1}\\e[0m\n"
+}
+
+function pr_err { # print error and exit
+	printf "%b" "\\e[2K\\r\\e[1;49m[\\e[0m\\e[7;31m!\\e[0m\\e[1;49m]\\e[0m\t\\e[7;41m${1}\\e[0m\n"
+	return
+}
+
+function installed { # check if program installed
+	command -v ${1} >/dev/null 2>&1 ||\
+		pr_err "${1} is not installed"
+	return 1
+}
+
+function crex { # create executable for c & c++
+	local exts=( cpp cc cxx c++ C CPP ) args=()
+
+	for arg in "${@}"; do
+		[[ "${arg}" =~ -([[:alnum:]]*) ]] && \
+			args+="${arg} "
+	done
+	unset arg
+
+	for file in "${@}"; do
+		[[ "c" = "${file##*.}" ]] && {\
+			${CC:?} ${args[@]} "${file}" -o "${file%%.*}"; \
+			continue; \
+		}
+		[[ "${exts[*]}" =~ "${file##*.}" ]] && \
+			${CXX:?} ${args[@]} "${file}" -o "${file%%.*}"
+	done
+	unset file
+}
+
+function c2db { # extract all dtbs to folder eith script "edtb"
+    local out="${2}" edtb="edtb"
+    mkdir "${out}"
+    ${edtb:?} "${1}" -o "${out}"
+}
+
+function c2ds { # convert dtb to dts
+    local if=${1} of=${2}
+    dtc -f -s -I dtb -O dts -o "${of:?}.dts" "${if:?}"
+}
+
+function formatize { # to format c/c++/java files
+	[[ `installed clang` ]] && {
+		[[ ${#} -eq 3 ]] && {
+			clang-format -i -style="{BasedOnStyle: ${1}, IndentWidth: ${2}}" "${3}"
+		} ||\
+			clang-format -i -style="{IndentWidth: ${1}}" "${2}"
+	}
+}
+
+function b2ihx { # convert binary file to intel hex file
+	[[ `installed srec_cat` ]] && \
+		srec_cat "$1" -Binary -o "$2" -Intel -address-length=3 -Output_block_size=16
+}
+
+function ihx2b { # convert intel hex file to binary file
+	[[ `installed srec_cat` ]] && \
+		srec_cat "$1" -Intel -o "$2" -Binary
+}
+
+function encf { # encrypt file with password through gnupg
+	[[ `installed gpg` ]] && \
+		gpg --encrypt --sign --armor -r ysaxenax@gmail.com "$1"
+}
+
+function cfile { # create a dummy c file
+	local filename="${1}"
+cat >> `pwd`/"${filename:?}" <<EOF
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char **argv) {
+        return EXIT_SUCCESS;
+}
+EOF
+}
+
+function proglog { # capture program log
+	[[ `installed strace` ]] && \
+		strace -fv -s 2048 -o "${1}" "${2}"
+}
+
+function fedt { # find and edit a file
+	[[ -n "${1}" ]] && \
+		find "${2:-}" -name "${1}" -exec ${EDITOR:-vim} {} \;
+}
+
+function deldog { # upload file to deldog
+	local file="${1}"
+	: "$(curl -sf --data-binary @"${file:?}" https://del.dog/documents)" || {
+		pr_err "not able to post the document"
+	}
+	: $(jq -r .key <<< ${_})
+	pr_info "https://del.dog/raw/${_}"
+}
+
+function gddl { # download file from google drive with 'gdrive' binary
+	[[ "${1}" = "-f" ]] && {
+		shift
+		for file in "${@}"; do
+			[[ -n "${file}" ]] && \
+				gdrive download `gdrive list | grep -Po "([[:alnum:]_-]*)(?= *${file})"`
+	        done
+		unset file
+	} ||\
+	[[ "${1}" = "-u" ]] && {
+		shift
+		for url in "${@}"; do
+			[[ -n "${url}" ]] && \
+				gdrive download `grep -Po '(id=|folders/|d/)\K[[:alnum:]_-]*' <<< "${url}"`
+		done
+		unset url
+	} ||\
+		pr_err "-f download files present in your google drive.e.g,\n\t${FUNCNAME[*]} -f yuvraj.txt alina.txt\n\n\t-u downloads file from a gdrive url.e.g,\n\t${FUNCNAME[*]} -u https://drive.google.com/file/d/1y7noyg8Lb0pnSiEhQAd7QtvZmtn68yVA/view?usp=drivesdk"
+}
+
+function rm_ex { # remove all executable from multiple directories
+	local dname
+
+	for dname in "${@}"; do
+		[[ ! -d ${dname} ]] && continue;
+		find ${dname} -type f | xargs -r file | grep "ELF" | grep -E "(executable|shared object)" | sed -E 's,./(.*):.*,\1,' | xargs -r rm;
+	done
+}
+
+function get_tooldir {
+	for tooldir in "$(find "${@}" -type f -xtype f -regex '.*bin\/.*\(-gcc\|clang\)' | xargs -r file | grep -E "(ELF|Python script)" | grep -E "(executable|GNU/Linux)" | cut -d: -f1 | xargs -r realpath | xargs -r dirname )";do export npath+=":${tooldir}"; done; npath=$( sed 's/^://' <<< $npath | tr ":" "\n" | sort -u | tr "\n" ":" | sed 's/:$//');
+	[[ -e $HOME/.tpath ]] && {
+		sed -i d $HOME/.tpath;
+		printf "%b"  "export PATH=$npath:\$PATH" >> ~/.tpath
+	} || printf "%b"  "export PATH=$npath:\$PATH" >> ~/.tpath
+	unset npath tooldir
+}
+
+function bgrun { # run a command in background
+	(nohup "$@" &>/dev/null &)
+}
