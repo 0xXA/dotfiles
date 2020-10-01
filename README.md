@@ -1,2 +1,2 @@
 # dotfiles
-My random stuffs
+This is a part of my random stuffs
