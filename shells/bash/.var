@@ -18,8 +18,8 @@ alias extooldir='get_tooldir "${@}"; source ~/.bashrc'
 alias cat='bat'
 alias cls='clear'
 alias cp='cp -i'
-alias fd='fdfind'
-alias grep='rg'
+#alias fd='fdfind'
+#alias grep='rg'
 alias dir='dir --color=auto'
 alias l='exa'
 alias ls='exa'
@@ -38,11 +38,11 @@ export AR='ar'
 export AS='as'
 export CC='gcc'
 export CXX='g++'
-export EDITOR='whereis code | grep -Poi ":\s\K[[:alnum:]/.]*"'
-export GPG_TTY=`tty`
+#export EDITOR='whereis code | grep -Poi ":\s\K[[:alnum:]/.]*"'
+#export GPG_TTY=`tty`
 export HISTFILE="$HOME/.bash_history"
 export HISTSIZE=4096
 export HISTFILESIZE=16384
 export HISTCONTROL="ignoreboth"
 
-[[ -e $HOME/.tpath ]] && . $HOME/.tpath
+#[[ -e $HOME/.tpath ]] && . $HOME/.tpath

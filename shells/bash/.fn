@@ -35,7 +35,7 @@ function crex { # create executable for c & c++
 	unset file
 }
 
-function c2db { # extract all dtbs to folder eith script "edtb"
+function c2db { # extract all dtbs to folder with script "edtb"
     local out="${2}" edtb="edtb"
     mkdir "${out}"
     ${edtb:?} "${1}" -o "${out}"

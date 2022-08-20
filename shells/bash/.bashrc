@@ -1,3 +1,4 @@
+# If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
 PS1="\[\033[01;31m\]\h\[\033[00m\] | \[\033[01;34m\]\$PWD\[\033[00m\] "
@@ -14,8 +15,3 @@ PS4='+ '
 }
 [[ -f $HOME/.var ]] && . $HOME/.var
 [[ -f $HOME/.fn ]] && . $HOME/.fn
-[[ ! `shopt -oq posix` ]] && {\
-	[[ -e /usr/share/bash-completion/bash_completion ]] && {\
-		. /usr/share/bash-completion/bash_completion;\
-	} || [[ -f /etc/bash_completion ]] && . /etc/bash_completion;\
-}
